@@ -33,21 +33,21 @@ public class TypedTextView extends AppCompatTextView
     private OnCharacterTypedListener mOnCharacterTypedListener;
     private int mIndex;
 
-    private static long DEFAULT_SENTENCE_DELAY = 1500;
-    private static long DEFAULT_CURSOR_BLINK_DELAY = 530;
+    private static long DEFAULT_SENTENCE_PAUSE = 1500;
+    private static long DEFAULT_CURSOR_BLINK_SPEED = 530;
     private static long DEFAULT_TYPING_RANDOM_SEED = 75;
     private static long DEFAULT_TYPING_SPEED = 175;
     private static boolean SHOW_CURSOR = false;
     private static boolean SPLIT_SENTENCES = false;
-    private static boolean RANDOMIZE_TYPE_DELAY = false;
+    private static boolean RANDOMIZE_TYPING = false;
 
-    private long mSentenceDelayMillis = DEFAULT_SENTENCE_DELAY;
-    private long mCursorBlinkDelayMillis = DEFAULT_CURSOR_BLINK_DELAY;
-    private long mTypingSeed = DEFAULT_TYPING_RANDOM_SEED;
-    private long mTypingDelayMillis = DEFAULT_TYPING_SPEED;
+    private long mSentencePauseMillis = DEFAULT_SENTENCE_PAUSE;
+    private long mCursorBlinkSpeedMillis = DEFAULT_CURSOR_BLINK_SPEED;
+    private long mRandomTypingSeedMillis = DEFAULT_TYPING_RANDOM_SEED;
+    private long mTypingSpeedMillis = DEFAULT_TYPING_SPEED;
     private boolean mbShowCursor = SHOW_CURSOR;
     private boolean mbSplitSentences = SPLIT_SENTENCES;
-    private boolean mbRandomizeTypeDelay = RANDOMIZE_TYPE_DELAY;
+    private boolean mbRandomizeTyping = RANDOMIZE_TYPING;
 
     /**
      * Callback to be invoked when typing is started.
@@ -78,13 +78,13 @@ public class TypedTextView extends AppCompatTextView
 
         TypedArray array = context.obtainStyledAttributes( attrs, R.styleable.TypedTextView, defStyle, 0 );
 
-        mSentenceDelayMillis = array.getInteger( R.styleable.TypedTextView_sentence_delay, ( int ) DEFAULT_SENTENCE_DELAY );
-        mCursorBlinkDelayMillis = array.getInteger( R.styleable.TypedTextView_cursor_blink_delay, ( int ) DEFAULT_CURSOR_BLINK_DELAY );
-        mTypingSeed = array.getInteger( R.styleable.TypedTextView_typing_seed, ( int ) DEFAULT_TYPING_RANDOM_SEED );
-        mTypingDelayMillis = array.getInteger( R.styleable.TypedTextView_typing_speed, ( int ) DEFAULT_TYPING_SPEED );
+        mSentencePauseMillis = array.getInteger( R.styleable.TypedTextView_sentence_pause, ( int ) DEFAULT_SENTENCE_PAUSE );
+        mCursorBlinkSpeedMillis = array.getInteger( R.styleable.TypedTextView_cursor_blink_speed, ( int ) DEFAULT_CURSOR_BLINK_SPEED );
+        mRandomTypingSeedMillis = array.getInteger( R.styleable.TypedTextView_typing_seed, ( int ) DEFAULT_TYPING_RANDOM_SEED );
+        mTypingSpeedMillis = array.getInteger( R.styleable.TypedTextView_typing_speed, ( int ) DEFAULT_TYPING_SPEED );
         mbShowCursor = array.getBoolean( R.styleable.TypedTextView_show_cursor, SHOW_CURSOR );
         mbSplitSentences = array.getBoolean( R.styleable.TypedTextView_split_sentences, SPLIT_SENTENCES );
-        mbRandomizeTypeDelay = array.getBoolean( R.styleable.TypedTextView_random_type_speed, RANDOMIZE_TYPE_DELAY );
+        mbRandomizeTyping = array.getBoolean( R.styleable.TypedTextView_random_type_speed, RANDOMIZE_TYPING );
 
         String typedText = array.getString( R.styleable.TypedTextView_typed_text );
         if( typedText != null )
@@ -110,13 +110,13 @@ public class TypedTextView extends AppCompatTextView
                 charSequence = charSequence + "|";
             }
 
-            if( mbRandomizeTypeDelay )
+            if( mbRandomizeTyping )
             {
-                if( mTypingDelayMillis == 0 )
+                if( mTypingSpeedMillis == 0 )
                 {
-                    mTypingDelayMillis = mTypingSeed;
+                    mTypingSpeedMillis = mRandomTypingSeedMillis;
                 }
-                mTypingDelayMillis = mTypingSeed + new Random().nextInt( ( int ) ( mTypingDelayMillis ) );
+                mTypingSpeedMillis = mRandomTypingSeedMillis + new Random().nextInt( ( int ) ( mTypingSpeedMillis ) );
             }
 
             //set character by character
@@ -129,12 +129,12 @@ public class TypedTextView extends AppCompatTextView
 
             if( mIndex < mText.length() )
             {
-                mHandler.postDelayed( mTypeWriter, mTypingDelayMillis );
+                mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
 
                 if( mIndex != 0 && ( mText.charAt( mIndex - 1 ) == '.' || mText.charAt( mIndex - 1 ) == ',' ) )
                 {
                     mHandler.removeCallbacks( mTypeWriter );
-                    mHandler.postDelayed( mTypeWriter, mSentenceDelayMillis );
+                    mHandler.postDelayed( mTypeWriter, mSentencePauseMillis );
                 }
                 mIndex++;
             }
@@ -143,7 +143,7 @@ public class TypedTextView extends AppCompatTextView
                 mHandler.removeCallbacks( mTypeWriter );
                 if( mbShowCursor )
                 {
-                    mHandler.postDelayed( mCursorProxyRunnable, mCursorBlinkDelayMillis );
+                    mHandler.postDelayed( mCursorProxyRunnable, mCursorBlinkSpeedMillis );
                 }
             }
         }
@@ -184,7 +184,7 @@ public class TypedTextView extends AppCompatTextView
             }
             mText = charSequence;
             setText( charSequence );
-            mHandler.postDelayed( mCursorProxyRunnable, mCursorBlinkDelayMillis );
+            mHandler.postDelayed( mCursorProxyRunnable, mCursorBlinkSpeedMillis );
         }
     };
 
@@ -206,7 +206,7 @@ public class TypedTextView extends AppCompatTextView
         {
             mHandler.removeCallbacks( mCursorProxyRunnable );
         }
-        mHandler.postDelayed( mTypeWriter, mTypingDelayMillis );
+        mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
     }
 
     private String splitSentences( @NonNull String text )
@@ -265,31 +265,32 @@ public class TypedTextView extends AppCompatTextView
     /**
      * Set duration to wait after every sentence
      *
-     * @param sentenceDelayMillis long duration in milliseconds to wait after every sentence
+     * @param sentencePauseMillis long duration in milliseconds to wait after every sentence
      */
-    public void setSentenceDelay( final long sentenceDelayMillis )
+    public void setSentencePause( final long sentencePauseMillis )
     {
-        mSentenceDelayMillis = sentenceDelayMillis;
+        mSentencePauseMillis = sentencePauseMillis;
     }
 
     /**
      * Set duration to wait after every cursor blink
      *
-     * @param cursorBlinkDelayMillis long duration in milliseconds between every cursor blink
+     * @param cursorBlinkSpeedMillis long duration in milliseconds between every cursor blink
      */
-    public void setCursorBlinkDelay( final long cursorBlinkDelayMillis )
+    public void setCursorBlinkSpeed( final long cursorBlinkSpeedMillis )
     {
-        mCursorBlinkDelayMillis = cursorBlinkDelayMillis;
+        showCursor( true );
+        mCursorBlinkSpeedMillis = cursorBlinkSpeedMillis;
     }
 
     /**
      * Set duration to wait after every character typed
      *
-     * @param typingDelayMillis long duration in milliseconds to wait after every character typed
+     * @param typingSpeedMillis long duration in milliseconds to wait after every character typed
      */
-    public void setTypingDelay( final long typingDelayMillis )
+    public void setTypingSpeed( final long typingSpeedMillis )
     {
-        mTypingDelayMillis = typingDelayMillis;
+        mTypingSpeedMillis = typingSpeedMillis;
     }
 
     /**
@@ -297,10 +298,20 @@ public class TypedTextView extends AppCompatTextView
      *
      * @param seed long seed to randomize the default typing speed
      */
-    public void randomizeTypeDelay( long seed )
+    public void randomizeTypeSeed( long seed )
     {
-        this.mbRandomizeTypeDelay = true;
-        mTypingSeed = seed;
+        randomizeTypingSpeed( true );
+        mRandomTypingSeedMillis = seed;
+    }
+
+    /**
+     * Simulate human typing by randomize typing speed
+     *
+     * @param bRandomizeTypeSpeed boolean enable random typing speed.
+     */
+    public void randomizeTypingSpeed( boolean bRandomizeTypeSpeed )
+    {
+        this.mbRandomizeTyping = bRandomizeTypeSpeed;
     }
 
     @Override
@@ -320,7 +331,7 @@ public class TypedTextView extends AppCompatTextView
         super.onAttachedToWindow();
         if( mText != null && mIndex != 0 && mIndex != mText.length() )
         {
-            mHandler.postDelayed( mTypeWriter, mTypingDelayMillis );
+            mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
         }
     }
 }
