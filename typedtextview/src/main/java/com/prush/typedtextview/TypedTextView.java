@@ -1,15 +1,15 @@
 package com.prush.typedtextview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
 import com.google.common.base.Preconditions;
 
 import java.util.Random;
-
-import android.support.annotation.NonNull;
-import android.support.v7.widget.AppCompatTextView;
 
 @SuppressWarnings( "unused" )
 public class TypedTextView extends AppCompatTextView
@@ -24,7 +24,7 @@ public class TypedTextView extends AppCompatTextView
     private static long DEFAULT_TYPING_SPEED = 175;
     private static boolean SHOW_CURSOR = false;
     private static boolean SPLIT_SENTENCES = false;
-    private static boolean RANDOMIZE_TYPE_DELAY = true;
+    private static boolean RANDOMIZE_TYPE_DELAY = false;
 
     private long mSentenceDelayMillis = DEFAULT_SENTENCE_DELAY;
     private long mCursorBlinkDelayMillis = DEFAULT_CURSOR_BLINK_DELAY;
@@ -54,7 +54,30 @@ public class TypedTextView extends AppCompatTextView
 
     public TypedTextView( Context context, AttributeSet attrs )
     {
-        super( context, attrs );
+        this( context, attrs, 0 );
+    }
+
+    public TypedTextView( Context context, AttributeSet attrs, int defStyle )
+    {
+        super( context, attrs, defStyle );
+
+        TypedArray array = context.obtainStyledAttributes( attrs, R.styleable.TypedTextView, defStyle, 0 );
+
+        mSentenceDelayMillis = array.getInteger( R.styleable.TypedTextView_sentence_delay, ( int ) DEFAULT_SENTENCE_DELAY );
+        mCursorBlinkDelayMillis = array.getInteger( R.styleable.TypedTextView_cursor_blink_delay, ( int ) DEFAULT_CURSOR_BLINK_DELAY );
+        mTypingSeed = array.getInteger( R.styleable.TypedTextView_typing_seed, ( int ) DEFAULT_TYPING_RANDOM_SEED );
+        mTypingDelayMillis = array.getInteger( R.styleable.TypedTextView_typing_speed, ( int ) DEFAULT_TYPING_SPEED );
+        mbShowCursor = array.getBoolean( R.styleable.TypedTextView_show_cursor, SHOW_CURSOR );
+        mbSplitSentences = array.getBoolean( R.styleable.TypedTextView_split_sentences, SPLIT_SENTENCES );
+        mbRandomizeTypeDelay = array.getBoolean( R.styleable.TypedTextView_random_type_speed, RANDOMIZE_TYPE_DELAY );
+
+        String typedText = array.getString( R.styleable.TypedTextView_typed_text );
+        if( typedText != null )
+        {
+            setTypedText( typedText );
+        }
+
+        array.recycle();
     }
 
     private Handler mHandler = new Handler();
@@ -151,7 +174,7 @@ public class TypedTextView extends AppCompatTextView
     };
 
     /**
-     * Set text to be typed by the TypeWriter
+     * Set text to be typed with the TypeWriter effect.
      *
      * @param text String text to be typed
      */
@@ -263,5 +286,26 @@ public class TypedTextView extends AppCompatTextView
     {
         this.mbRandomizeTypeDelay = true;
         mTypingSeed = seed;
+    }
+
+    @Override
+    protected void onDetachedFromWindow()
+    {
+        super.onDetachedFromWindow();
+        mHandler.removeCallbacks( mTypeWriter );
+        if( mbShowCursor )
+        {
+            mHandler.removeCallbacks( mCursorProxyRunnable );
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow()
+    {
+        super.onAttachedToWindow();
+        if( mText != null && mIndex != 0 && mIndex != mText.length() )
+        {
+            mHandler.postDelayed( mTypeWriter, mTypingDelayMillis );
+        }
     }
 }

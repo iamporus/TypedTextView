@@ -1,3 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="TypedTextView">
+        <attr name="sentence_delay" format="integer"/>
+        <attr name="cursor_blink_delay" format="integer"/>
+        <attr name="typing_seed" format="integer"/>
+        <attr name="typing_speed" format="integer"/>
+        <attr name="show_cursor" format="boolean"/>
+        <attr name="split_sentences" format="boolean"/>
+        <attr name="random_type_speed" format="boolean"/>
+        <attr name="typed_text" format="string"/>
+    </declare-styleable>
 </resources>
