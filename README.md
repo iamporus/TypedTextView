@@ -75,6 +75,17 @@ typedTextView.randomizeTypeSeed( 75 );
 
 //Set text to be typed
 typedTextView.setTypedText( "Once there lived a monkey in a jamun tree by a river. The monkey was alone. He had no friends, no family, but he was happy and content." );
+
+//Set listener to invoke other actions based on status.
+typedTextView.setOnCharacterTypedListener( new TypedTextView.OnCharacterTypedListener()
+{
+  @Override
+  public void onCharacterTyped( char character, int index )
+  {
+    Log.d( TAG, "onCharacterTyped: " + character + " at index " + index );
+  }
+});
+
 ```
 
 ## License
