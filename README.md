@@ -7,6 +7,9 @@ Custom implementation of Android's TextView simulating a keyboard/type-writer.
 * display **sentences on new line** on sensing fullstops in passed text.
 * delay on sensing comma(,) and fullstop(.) to **simulate user pauses**. 
 
+## Preview
+![](demo.gif)
+
 ## Gradle
 * **Step 1.** Add the JitPack repository to your build file.
 
