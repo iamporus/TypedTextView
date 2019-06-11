@@ -8,8 +8,9 @@ Custom implementation of Android's TextView simulating a keyboard/type-writer.
 * delay on sensing comma(,) and fullstop(.) to **simulate user pauses**. 
 
 ## Gradle
-* **Step 1.** Add the JitPack repository to your build file
-Add following in your root build.gradle at the end of repositories:
+* **Step 1.** Add the JitPack repository to your build file.
+
+Add following in your **Project level** build.gradle at the end of repositories:
 ```
 allprojects {
   repositories {
