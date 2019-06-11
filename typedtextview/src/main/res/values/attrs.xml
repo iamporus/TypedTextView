@@ -3,11 +3,11 @@
     <declare-styleable name="TypedTextView">
         <attr name="sentence_pause" format="integer"/>
         <attr name="cursor_blink_speed" format="integer"/>
-        <attr name="typing_seed" format="integer"/>
+        <attr name="randomize_type_seed" format="integer"/>
         <attr name="typing_speed" format="integer"/>
         <attr name="show_cursor" format="boolean"/>
         <attr name="split_sentences" format="boolean"/>
-        <attr name="random_type_speed" format="boolean"/>
+        <attr name="randomize_typing_speed" format="boolean"/>
         <attr name="typed_text" format="string"/>
     </declare-styleable>
 </resources>

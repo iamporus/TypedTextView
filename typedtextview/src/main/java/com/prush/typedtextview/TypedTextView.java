@@ -35,7 +35,7 @@ public class TypedTextView extends AppCompatTextView
 
     private static long DEFAULT_SENTENCE_PAUSE = 1500;
     private static long DEFAULT_CURSOR_BLINK_SPEED = 530;
-    private static long DEFAULT_TYPING_RANDOM_SEED = 75;
+    private static long DEFAULT_RANDOM_TYPING_SEED = 75;
     private static long DEFAULT_TYPING_SPEED = 175;
     private static boolean SHOW_CURSOR = false;
     private static boolean SPLIT_SENTENCES = false;
@@ -43,7 +43,7 @@ public class TypedTextView extends AppCompatTextView
 
     private long mSentencePauseMillis = DEFAULT_SENTENCE_PAUSE;
     private long mCursorBlinkSpeedMillis = DEFAULT_CURSOR_BLINK_SPEED;
-    private long mRandomTypingSeedMillis = DEFAULT_TYPING_RANDOM_SEED;
+    private long mRandomTypingSeedMillis = DEFAULT_RANDOM_TYPING_SEED;
     private long mTypingSpeedMillis = DEFAULT_TYPING_SPEED;
     private boolean mbShowCursor = SHOW_CURSOR;
     private boolean mbSplitSentences = SPLIT_SENTENCES;
@@ -80,11 +80,11 @@ public class TypedTextView extends AppCompatTextView
 
         mSentencePauseMillis = array.getInteger( R.styleable.TypedTextView_sentence_pause, ( int ) DEFAULT_SENTENCE_PAUSE );
         mCursorBlinkSpeedMillis = array.getInteger( R.styleable.TypedTextView_cursor_blink_speed, ( int ) DEFAULT_CURSOR_BLINK_SPEED );
-        mRandomTypingSeedMillis = array.getInteger( R.styleable.TypedTextView_typing_seed, ( int ) DEFAULT_TYPING_RANDOM_SEED );
+        mRandomTypingSeedMillis = array.getInteger( R.styleable.TypedTextView_randomize_type_seed, ( int ) DEFAULT_RANDOM_TYPING_SEED );
         mTypingSpeedMillis = array.getInteger( R.styleable.TypedTextView_typing_speed, ( int ) DEFAULT_TYPING_SPEED );
         mbShowCursor = array.getBoolean( R.styleable.TypedTextView_show_cursor, SHOW_CURSOR );
         mbSplitSentences = array.getBoolean( R.styleable.TypedTextView_split_sentences, SPLIT_SENTENCES );
-        mbRandomizeTyping = array.getBoolean( R.styleable.TypedTextView_random_type_speed, RANDOMIZE_TYPING );
+        mbRandomizeTyping = array.getBoolean( R.styleable.TypedTextView_randomize_typing_speed, RANDOMIZE_TYPING );
 
         String typedText = array.getString( R.styleable.TypedTextView_typed_text );
         if( typedText != null )
