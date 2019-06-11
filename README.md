@@ -2,6 +2,7 @@
 [![License](https://img.shields.io/badge/License%20-Apache%202-337ab7.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![MinSDK](https://img.shields.io/badge/API-15%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=15)
 [![](https://jitpack.io/v/iamporus/TypedTextView.svg)](https://jitpack.io/#iamporus/TypedTextView)
+[![Build Status](https://travis-ci.com/iamporus/TypedTextView.svg?branch=master)](https://travis-ci.com/iamporus/TypedTextView)
 
 Custom implementation of Android's TextView simulating a keyboard/type-writer.
 
