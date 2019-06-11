@@ -2,11 +2,14 @@ package com.prush.sample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.prush.typedtextview.TypedTextView;
 
 public class MainActivity extends AppCompatActivity
 {
+
+    public static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate( Bundle savedInstanceState )
@@ -32,5 +35,14 @@ public class MainActivity extends AppCompatActivity
 
         //Set text to be typed
         typedTextView.setTypedText( "Once there lived a monkey in a jamun tree by a river. The monkey was alone. He had no friends, no family, but he was happy and content." );
+
+        typedTextView.setOnCharacterTypedListener( new TypedTextView.OnCharacterTypedListener()
+        {
+            @Override
+            public void onCharacterTyped( char character, int index )
+            {
+                Log.d( TAG, "onCharacterTyped: " + character + " at index " + index );
+            }
+        } );
     }
 }

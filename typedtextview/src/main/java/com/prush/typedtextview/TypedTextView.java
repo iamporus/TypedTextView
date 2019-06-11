@@ -59,7 +59,7 @@ public class TypedTextView extends AppCompatTextView
          *
          * @param index The index of last typed character on screen.
          */
-        void onCharacterTyped( final int index );
+        void onCharacterTyped( final char character, final int index );
     }
 
     public TypedTextView( Context context )
@@ -122,9 +122,9 @@ public class TypedTextView extends AppCompatTextView
             //set character by character
             setText( charSequence );
 
-            if( mOnCharacterTypedListener != null )
+            if( mOnCharacterTypedListener != null && mIndex < mText.length() )
             {
-                mOnCharacterTypedListener.onCharacterTyped( mIndex );
+                mOnCharacterTypedListener.onCharacterTyped( mText.charAt( mIndex ), mIndex );
             }
 
             if( mIndex < mText.length() )
