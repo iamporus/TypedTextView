@@ -35,13 +35,25 @@ allprojects {
 ```
 dependencies {
   ...
-  implementation 'com.github.iamporus:TypedTextView:1.0.0'
+  implementation 'com.github.iamporus:TypedTextView:1.0.1'
 }
 ```
 
-## Usage
+## Usage - XML
 
-### XML
+### Simple Usage
+```
+<com.prush.typedtextview.TypedTextView
+        android:id="@+id/typedTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:textSize="24sp"
+        app:typed_text="Once there lived a monkey in a jamun tree by a river. The monkey was alone. He had no friends, no family, but he was happy and content."/>
+
+```
+### Customizations
+
 ```
 <com.prush.typedtextview.TypedTextView
         android:id="@+id/typedTextView"
@@ -61,8 +73,19 @@ dependencies {
         app:typing_speed="175"/>
 ```
 
-### Java
+## Usage - Java
 
+### Simple Usage
+```
+TypedTextView typedTextView = findViewById( R.id.typedTextView );
+
+typedTextView.setTypedText( "Once there lived a monkey in a jamun tree by a river. The monkey was alone. He had no friends, no family, but he was happy and content." );
+
+//Attach TypedTextView's lifecycle to Activity's lifecycle.
+getLifecycle().addObserver( typedTextView.getLifecycleObserver() );
+
+```
+### Customizations
 ```
 TypedTextView typedTextView = findViewById( R.id.typedTextView );
 //Set typing speed
