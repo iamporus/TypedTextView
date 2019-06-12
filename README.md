@@ -31,7 +31,7 @@ allprojects {
 ```
 dependencies {
   ...
-  implementation 'com.github.iamporus:TypedTextView:0.0.2'
+  implementation 'com.github.iamporus:TypedTextView:0.0.3'
 }
 ```
 
