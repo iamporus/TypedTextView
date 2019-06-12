@@ -4,13 +4,17 @@
 [![](https://jitpack.io/v/iamporus/TypedTextView.svg)](https://jitpack.io/#iamporus/TypedTextView)
 [![Build Status](https://travis-ci.com/iamporus/TypedTextView.svg?branch=master)](https://travis-ci.com/iamporus/TypedTextView)
 
-Custom implementation of Android's TextView simulating a keyboard/type-writer.
+Custom implementation of Android's TextView simulating a keyboard/typewriter.
 
 ## Features
 * display a **blinking cursor** after every character typed.
-* characters are displayed on screen with **random speed** which simulates human behavior.
-* display **sentences on new line** on sensing fullstops in passed text.
-* delay on sensing comma(,) and fullstop(.) to **simulate user pauses**. 
+* characters are displayed on the screen with **random speed** which simulates human behavior.
+* emit **audio keystrokes** with typed characters.
+* **Lifecycle-aware** component. Character typing and audio stops/resumes as per Activity/Fragment state.
+* delay on sensing comma(,) and full stops(.) to **simulate user pauses**.
+* display **sentences on new line** on sensing full stops in passed text.
+
+
 
 ## Preview
 ![](demo.gif)
@@ -31,7 +35,7 @@ allprojects {
 ```
 dependencies {
   ...
-  implementation 'com.github.iamporus:TypedTextView:0.0.3'
+  implementation 'com.github.iamporus:TypedTextView:1.0.0'
 }
 ```
 
@@ -51,6 +55,8 @@ dependencies {
         app:cursor_blink_speed="530"
         app:sentence_pause="1500"
         app:split_sentences="true"
+        app:play_keystrokes_audio="true"                                   //use default audio 
+        app:play_keystrokes_audio_res="@raw/your_audio_keystroke_res_id"   //OR use custom audio
         app:typed_text="Once there lived a monkey in a jamun tree by a river. The monkey was alone. He had no friends, no family, but he was happy and content."
         app:typing_speed="175"/>
 ```
@@ -74,9 +80,18 @@ typedTextView.setCursorBlinkSpeed( 530 );
 typedTextView.randomizeTypingSpeed( true );
 typedTextView.randomizeTypeSeed( 75 );
 
+//Play default keystrokes audio
+typedTextView.playKeyStrokesAudio( true );
+        
+//OR play custom keystrokes audio
+typedTextView.playKeyStrokesAudio( R.raw.your_audio_keystroke_res_id );
+        
 //Set text to be typed
 typedTextView.setTypedText( "Once there lived a monkey in a jamun tree by a river. The monkey was alone. He had no friends, no family, but he was happy and content." );
 
+//Attach TypedTextView's lifecycle to Activity's lifecycle.
+getLifecycle().addObserver( typedTextView.getLifecycleObserver() );
+        
 //Set listener to invoke other actions based on status.
 typedTextView.setOnCharacterTypedListener( new TypedTextView.OnCharacterTypedListener()
 {
