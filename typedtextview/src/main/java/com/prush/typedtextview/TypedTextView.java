@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
@@ -191,9 +192,9 @@ public class TypedTextView extends AppCompatTextView
     /**
      * Set text to be typed with the TypeWriter effect.
      *
-     * @param text String text to be typed
+     * @param text {@link String} text to be typed character by character.
      */
-    public void setTypedText( final @NonNull String text )
+    public void setTypedText( @NonNull final String text )
     {
         Preconditions.checkNotNull( text );
 
@@ -207,6 +208,28 @@ public class TypedTextView extends AppCompatTextView
             mHandler.removeCallbacks( mCursorProxyRunnable );
         }
         mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
+    }
+
+    /**
+     * Set text to be typed with the TypeWriter effect.
+     *
+     * @param resId int resource Id of String to be typed.
+     */
+    public void setTypedText( @StringRes final int resId )
+    {
+        String text = getContext().getString( resId );
+        setTypedText( text );
+    }
+
+    /**
+     * Set text to be typed with the TypeWriter effect.
+     *
+     * @param charSequence {@link CharSequence} to be typed character by character.
+     */
+    public void setTypedText( final CharSequence charSequence )
+    {
+        String text = charSequence.toString();
+        setTypedText( text );
     }
 
     private String splitSentences( @NonNull String text )
@@ -236,7 +259,7 @@ public class TypedTextView extends AppCompatTextView
      *
      * @param onCharacterTypedListener {@link OnCharacterTypedListener}
      */
-    public void setOnCharacterTypedListener( OnCharacterTypedListener onCharacterTypedListener )
+    public void setOnCharacterTypedListener( final OnCharacterTypedListener onCharacterTypedListener )
     {
         mOnCharacterTypedListener = onCharacterTypedListener;
     }
@@ -298,7 +321,7 @@ public class TypedTextView extends AppCompatTextView
      *
      * @param seed long seed to randomize the default typing speed
      */
-    public void randomizeTypeSeed( long seed )
+    public void randomizeTypeSeed( final long seed )
     {
         randomizeTypingSpeed( true );
         mRandomTypingSeedMillis = seed;
