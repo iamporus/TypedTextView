@@ -15,6 +15,9 @@
  */
 package com.prush.typedtextview;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Handler;
@@ -28,7 +31,7 @@ import com.google.common.base.Preconditions;
 import java.util.Random;
 
 @SuppressWarnings( "unused" )
-public class TypedTextView extends AppCompatTextView
+public class TypedTextView extends AppCompatTextView implements LifecycleObserver
 {
     private CharSequence mText;
     private OnCharacterTypedListener mOnCharacterTypedListener;
@@ -337,24 +340,36 @@ public class TypedTextView extends AppCompatTextView
         this.mbRandomizeTyping = bRandomizeTypeSpeed;
     }
 
-    @Override
-    protected void onDetachedFromWindow()
+    /**
+     * Returns a LifecycleObserver that expects to be notified when the LifecycleOwner changes state.
+     * Add this as a {@link LifecycleObserver} to {@link android.support.v7.app.AppCompatActivity} or
+     * {@link android.support.v4.app.Fragment}
+     *
+     * @return LifecycleObserver
+     */
+    public LifecycleObserver getLifecycleObserver()
     {
-        super.onDetachedFromWindow();
+        return this;
+    }
+
+    @OnLifecycleEvent( Lifecycle.Event.ON_START )
+    private void onViewStarted()
+    {
+        //resume typing if view was stopped before entire text was displayed.
+        if( mText != null && mIndex != 0 && mIndex != mText.length() )
+        {
+            mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
+        }
+    }
+
+    @OnLifecycleEvent( Lifecycle.Event.ON_STOP )
+    private void onViewStopped()
+    {
+        //stop typing as view is now in stopped state.
         mHandler.removeCallbacks( mTypeWriter );
         if( mbShowCursor )
         {
             mHandler.removeCallbacks( mCursorProxyRunnable );
-        }
-    }
-
-    @Override
-    protected void onAttachedToWindow()
-    {
-        super.onAttachedToWindow();
-        if( mText != null && mIndex != 0 && mIndex != mText.length() )
-        {
-            mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
         }
     }
 }
