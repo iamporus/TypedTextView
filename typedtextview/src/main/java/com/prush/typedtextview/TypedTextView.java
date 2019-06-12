@@ -20,8 +20,10 @@ import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.RawRes;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
@@ -41,9 +43,12 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
     private static long DEFAULT_CURSOR_BLINK_SPEED = 530;
     private static long DEFAULT_RANDOM_TYPING_SEED = 75;
     private static long DEFAULT_TYPING_SPEED = 175;
+    private static int DEFAULT_KEYSTROKES_AUDIO_RES = R.raw.keystrokes;
+
     private static boolean SHOW_CURSOR = false;
     private static boolean SPLIT_SENTENCES = false;
     private static boolean RANDOMIZE_TYPING = false;
+    private static boolean PLAY_KEYSTROKES_AUDIO = false;
 
     private long mSentencePauseMillis = DEFAULT_SENTENCE_PAUSE;
     private long mCursorBlinkSpeedMillis = DEFAULT_CURSOR_BLINK_SPEED;
@@ -52,6 +57,12 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
     private boolean mbShowCursor = SHOW_CURSOR;
     private boolean mbSplitSentences = SPLIT_SENTENCES;
     private boolean mbRandomizeTyping = RANDOMIZE_TYPING;
+    private boolean mbPlayKeyStrokesAudio = PLAY_KEYSTROKES_AUDIO;
+    private int mKeyStrokeAudioRes = DEFAULT_KEYSTROKES_AUDIO_RES;
+
+    private MediaPlayer mMediaPlayer;
+    private Handler mHandler = new Handler();
+
 
     /**
      * Callback to be invoked when typing is started.
@@ -89,6 +100,17 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
         mbShowCursor = array.getBoolean( R.styleable.TypedTextView_show_cursor, SHOW_CURSOR );
         mbSplitSentences = array.getBoolean( R.styleable.TypedTextView_split_sentences, SPLIT_SENTENCES );
         mbRandomizeTyping = array.getBoolean( R.styleable.TypedTextView_randomize_typing_speed, RANDOMIZE_TYPING );
+        mbPlayKeyStrokesAudio = array.getBoolean( R.styleable.TypedTextView_play_keystrokes_audio, PLAY_KEYSTROKES_AUDIO );
+        mKeyStrokeAudioRes = array.getResourceId( R.styleable.TypedTextView_play_keystrokes_audio_res, -1 );
+
+        if( mKeyStrokeAudioRes == -1 )
+        {
+            mKeyStrokeAudioRes = DEFAULT_KEYSTROKES_AUDIO_RES;
+        }
+        else
+        {
+            playKeyStrokesAudioWith( mKeyStrokeAudioRes );
+        }
 
         String typedText = array.getString( R.styleable.TypedTextView_typed_text );
         if( typedText != null )
@@ -99,7 +121,6 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
         array.recycle();
     }
 
-    private Handler mHandler = new Handler();
     private Runnable mTypeWriter = new Runnable()
     {
         @Override
@@ -126,6 +147,12 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
             //set character by character
             setText( charSequence );
 
+            //play keystrokes
+            if( mbPlayKeyStrokesAudio )
+            {
+                mMediaPlayer.start();
+            }
+
             if( mOnCharacterTypedListener != null && mIndex < mText.length() )
             {
                 mOnCharacterTypedListener.onCharacterTyped( mText.charAt( mIndex ), mIndex );
@@ -135,8 +162,15 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
             {
                 mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
 
+                //introduce sentence pause
                 if( mIndex != 0 && ( mText.charAt( mIndex - 1 ) == '.' || mText.charAt( mIndex - 1 ) == ',' ) )
                 {
+
+                    //pause keystrokes as well
+                    if( mbPlayKeyStrokesAudio )
+                    {
+                        mMediaPlayer.pause();
+                    }
                     mHandler.removeCallbacks( mTypeWriter );
                     mHandler.postDelayed( mTypeWriter, mSentencePauseMillis );
                 }
@@ -144,7 +178,16 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
             }
             else
             {
+                //end of text.
                 mHandler.removeCallbacks( mTypeWriter );
+
+                //stop playing keystrokes
+                if( mbPlayKeyStrokesAudio )
+                {
+                    mMediaPlayer.stop();
+                }
+
+                //typing completed. show blinking cursor.
                 if( mbShowCursor )
                 {
                     mHandler.postDelayed( mCursorProxyRunnable, mCursorBlinkSpeedMillis );
@@ -201,15 +244,26 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
     {
         Preconditions.checkNotNull( text );
 
+        //split sentences on new line
         mText = mbSplitSentences ? splitSentences( text ) : text;
 
         mIndex = 0;
         setText( "" );
+
+        //remove previous callbacks
         mHandler.removeCallbacks( mTypeWriter );
         if( mbShowCursor )
         {
             mHandler.removeCallbacks( mCursorProxyRunnable );
         }
+
+        //prepare MediaPlayer
+        if( mbPlayKeyStrokesAudio )
+        {
+            mMediaPlayer = MediaPlayer.create( getContext(), mKeyStrokeAudioRes );
+        }
+
+        //start typing
         mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
     }
 
@@ -335,9 +389,30 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
      *
      * @param bRandomizeTypeSpeed boolean enable random typing speed.
      */
-    public void randomizeTypingSpeed( boolean bRandomizeTypeSpeed )
+    public void randomizeTypingSpeed( final boolean bRandomizeTypeSpeed )
     {
-        this.mbRandomizeTyping = bRandomizeTypeSpeed;
+        mbRandomizeTyping = bRandomizeTypeSpeed;
+    }
+
+    /**
+     * Play default keystrokes sound along with typing characters
+     *
+     * @param bPlayKeystrokesAudio boolean
+     */
+    public void playKeyStrokesAudio( final boolean bPlayKeystrokesAudio )
+    {
+        mbPlayKeyStrokesAudio = bPlayKeystrokesAudio;
+    }
+
+    /**
+     * Play specified keystrokes sound along with typing characters
+     *
+     * @param keyStrokeAudioRes @RawRes int resourceId of audio resource
+     */
+    public void playKeyStrokesAudioWith( @RawRes final int keyStrokeAudioRes )
+    {
+        playKeyStrokesAudio( true );
+        mKeyStrokeAudioRes = keyStrokeAudioRes;
     }
 
     /**
@@ -358,6 +433,11 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
         //resume typing if view was stopped before entire text was displayed.
         if( mText != null && mIndex != 0 && mIndex != mText.length() )
         {
+            //resume playing keystrokes
+            if( mbPlayKeyStrokesAudio )
+            {
+                mMediaPlayer.start();
+            }
             mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
         }
     }
@@ -370,6 +450,12 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
         if( mbShowCursor )
         {
             mHandler.removeCallbacks( mCursorProxyRunnable );
+        }
+
+        //pause playing keystrokes
+        if( mbPlayKeyStrokesAudio )
+        {
+            mMediaPlayer.pause();
         }
     }
 }

@@ -9,5 +9,7 @@
         <attr name="split_sentences" format="boolean"/>
         <attr name="randomize_typing_speed" format="boolean"/>
         <attr name="typed_text" format="string"/>
+        <attr name="play_keystrokes_audio" format="boolean"/>
+        <attr name="play_keystrokes_audio_res" format="reference"/>
     </declare-styleable>
 </resources>
