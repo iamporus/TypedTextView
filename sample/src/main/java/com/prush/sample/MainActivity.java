@@ -33,6 +33,9 @@ public class MainActivity extends AppCompatActivity
         typedTextView.randomizeTypingSpeed( true );
         typedTextView.randomizeTypeSeed( 75 );
 
+        //Play keystrokes audio
+        typedTextView.playKeyStrokesAudio( true );
+
         //Set text to be typed
         typedTextView.setTypedText( "Once there lived a monkey in a jamun tree by a river. The monkey was alone. He had no friends, no family, but he was happy and content." );
 
