@@ -45,10 +45,10 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
     private static long DEFAULT_TYPING_SPEED = 175;
     private static int DEFAULT_KEYSTROKES_AUDIO_RES = R.raw.keystrokes;
 
-    private static boolean SHOW_CURSOR = false;
-    private static boolean SPLIT_SENTENCES = false;
-    private static boolean RANDOMIZE_TYPING = false;
-    private static boolean PLAY_KEYSTROKES_AUDIO = false;
+    private static boolean SHOW_CURSOR = true;
+    private static boolean SPLIT_SENTENCES = true;
+    private static boolean RANDOMIZE_TYPING = true;
+    private static boolean PLAY_KEYSTROKES_AUDIO = true;
 
     private long mSentencePauseMillis = DEFAULT_SENTENCE_PAUSE;
     private long mCursorBlinkSpeedMillis = DEFAULT_CURSOR_BLINK_SPEED;
