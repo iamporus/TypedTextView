@@ -44,5 +44,8 @@ public class MainActivity extends AppCompatActivity
                 Log.d( TAG, "onCharacterTyped: " + character + " at index " + index );
             }
         } );
+
+        //Attach TypedTextView's lifecycle to Activity's lifecycle.
+        getLifecycle().addObserver( typedTextView.getLifecycleObserver() );
     }
 }
