@@ -35,9 +35,10 @@ allprojects {
 ```
 dependencies {
   ...
-  implementation 'com.github.iamporus:TypedTextView:1.0.1'
+  implementation 'com.github.iamporus:TypedTextView:x.y.z'
 }
 ```
+The latest version of TypedTextView is  [![](https://jitpack.io/v/iamporus/TypedTextView.svg)](https://jitpack.io/#iamporus/TypedTextView)
 
 ## Usage - XML
 
