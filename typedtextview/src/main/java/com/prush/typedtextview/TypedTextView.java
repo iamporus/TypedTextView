@@ -279,6 +279,17 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
     }
 
     /**
+     * Get the text to be typed.
+     *
+     * @return CharSequence text being/to be typed by the view.
+     */
+    @Override
+    public CharSequence getText()
+    {
+        return mText;
+    }
+
+    /**
      * Set text to be typed with the TypeWriter effect.
      *
      * @param charSequence {@link CharSequence} to be typed character by character.
