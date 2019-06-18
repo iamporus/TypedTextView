@@ -22,6 +22,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.RawRes;
 import android.support.annotation.StringRes;
@@ -468,5 +470,73 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
         {
             mMediaPlayer.pause();
         }
+    }
+
+    @Override
+    public Parcelable onSaveInstanceState()
+    {
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState savedState = new SavedState( superState );
+        savedState.setCurrentIndex( mIndex );
+        return savedState;
+    }
+
+    @Override
+    public void onRestoreInstanceState( Parcelable state )
+    {
+        SavedState savedState = ( SavedState ) state;
+        super.onRestoreInstanceState( savedState.getSuperState() );
+        mIndex = savedState.getCurrentIndex();
+    }
+
+    /**
+     * Class to save view's internal state across lifecycle owner's state changes.
+     */
+    private static class SavedState extends BaseSavedState
+    {
+        private int mCurrentIndex;
+
+        SavedState( Parcel source )
+        {
+            super( source );
+            mCurrentIndex = source.readInt();
+        }
+
+        SavedState( Parcelable superState )
+        {
+            super( superState );
+        }
+
+        void setCurrentIndex( int currentIndex )
+        {
+            mCurrentIndex = currentIndex;
+        }
+
+        int getCurrentIndex()
+        {
+            return mCurrentIndex;
+        }
+
+        @Override
+        public void writeToParcel( Parcel out, int flags )
+        {
+            super.writeToParcel( out, flags );
+            out.writeInt( mCurrentIndex );
+        }
+
+        public static final Parcelable.Creator< SavedState > CREATOR = new Creator< SavedState >()
+        {
+            @Override
+            public SavedState createFromParcel( Parcel parcel )
+            {
+                return new SavedState( parcel );
+            }
+
+            @Override
+            public SavedState[] newArray( int size )
+            {
+                return new SavedState[ size ];
+            }
+        };
     }
 }
