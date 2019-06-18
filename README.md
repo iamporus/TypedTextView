@@ -1,9 +1,10 @@
 # TypedTextView
 [![License](https://img.shields.io/badge/License%20-Apache%202-337ab7.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![MinSDK](https://img.shields.io/badge/API-15%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=15)
+[![Build Status](https://travis-ci.com/iamporus/TypedTextView.svg?branch=master)](https://travis-ci.com/iamporus/TypedTextView)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/iamporus/TypedTextView.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/iamporus/TypedTextView/context:java)
 [![](https://jitpack.io/v/iamporus/TypedTextView.svg)](https://jitpack.io/#iamporus/TypedTextView)
 [![Android Arsenal]( https://img.shields.io/badge/Android%20Arsenal-TypedTextView-green.svg?style=flat )]( https://android-arsenal.com/details/1/7711 )
-[![Build Status](https://travis-ci.com/iamporus/TypedTextView.svg?branch=master)](https://travis-ci.com/iamporus/TypedTextView)
 
 Custom implementation of Android's TextView simulating a keyboard/typewriter.
 
@@ -12,6 +13,7 @@ Custom implementation of Android's TextView simulating a keyboard/typewriter.
 * characters are displayed on the screen with **random speed** which simulates human behavior.
 * emit **audio keystrokes** with typed characters.
 * **Lifecycle-aware** component. Character typing and audio stops/resumes as per Activity/Fragment state.
+* support to **maintain state** across Activity/Fragment lifecycle.
 * delay on sensing comma(,) and full stops(.) to **simulate user pauses**.
 * display **sentences on new line** on sensing full stops in passed text.
 
