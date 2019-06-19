@@ -128,54 +128,34 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
         @Override
         public void run()
         {
-            //extract characters by index
-            CharSequence charSequence = mText.subSequence( 0, mIndex );
-
-            //append cursor
-            if( mbShowCursor && mIndex < mText.length() )
-            {
-                charSequence = charSequence + "|";
-            }
-
-            if( mbRandomizeTyping )
-            {
-                if( mTypingSpeedMillis == 0 )
-                {
-                    mTypingSpeedMillis = mRandomTypingSeedMillis;
-                }
-                mTypingSpeedMillis = mRandomTypingSeedMillis + new Random().nextInt( ( int ) ( mTypingSpeedMillis ) );
-            }
-
-            //set character by character
-            setText( charSequence );
-
-            //play keystrokes
-            if( mbPlayKeyStrokesAudio )
-            {
-                mMediaPlayer.start();
-            }
-
-            if( mOnCharacterTypedListener != null && mIndex < mText.length() )
-            {
-                mOnCharacterTypedListener.onCharacterTyped( mText.charAt( mIndex ), mIndex );
-            }
-
             if( mIndex < mText.length() )
             {
+                //extract characters by index
+                CharSequence charSequence = mText.subSequence( 0, mIndex );
+
+                //append cursor
+                if( mbShowCursor )
+                {
+                    charSequence = charSequence + "|";
+                }
+
+                randomizeTyping();
+
+                //play keystrokes
+                playKeystrokes();
+
+                //set character by character
+                setText( charSequence );
+
+                addSentencePause();
+
+                if( mOnCharacterTypedListener != null )
+                {
+                    mOnCharacterTypedListener.onCharacterTyped( mText.charAt( mIndex ), mIndex );
+                }
+
                 mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
 
-                //introduce sentence pause
-                if( mIndex != 0 && ( mText.charAt( mIndex - 1 ) == '.' || mText.charAt( mIndex - 1 ) == ',' ) )
-                {
-
-                    //pause keystrokes as well
-                    if( mbPlayKeyStrokesAudio )
-                    {
-                        mMediaPlayer.pause();
-                    }
-                    mHandler.removeCallbacks( mTypeWriter );
-                    mHandler.postDelayed( mTypeWriter, mSentencePauseMillis );
-                }
                 mIndex++;
             }
             else
@@ -184,10 +164,7 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
                 mHandler.removeCallbacks( mTypeWriter );
 
                 //stop playing keystrokes
-                if( mbPlayKeyStrokesAudio )
-                {
-                    mMediaPlayer.stop();
-                }
+                stopKeystrokes();
 
                 //typing completed. show blinking cursor.
                 if( mbShowCursor )
@@ -197,6 +174,72 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
             }
         }
     };
+
+    private void stopKeystrokes()
+    {
+        if( mbPlayKeyStrokesAudio )
+        {
+            mMediaPlayer.stop();
+        }
+    }
+
+    private void playKeystrokes()
+    {
+        if( mbPlayKeyStrokesAudio )
+        {
+            mMediaPlayer.start();
+        }
+    }
+
+    private void prepareMediaPlayer()
+    {
+        if( mbPlayKeyStrokesAudio )
+        {
+            mMediaPlayer = MediaPlayer.create( getContext(), mKeyStrokeAudioRes );
+        }
+    }
+
+    private void removeCallbacks()
+    {
+        mHandler.removeCallbacks( mTypeWriter );
+        if( mbShowCursor )
+        {
+            mHandler.removeCallbacks( mCursorProxyRunnable );
+        }
+    }
+
+    private void pauseKeyStrokes()
+    {
+        if( mbPlayKeyStrokesAudio )
+        {
+            mMediaPlayer.pause();
+        }
+    }
+
+    private void randomizeTyping()
+    {
+        if( mbRandomizeTyping )
+        {
+            if( mTypingSpeedMillis == 0 )
+            {
+                mTypingSpeedMillis = mRandomTypingSeedMillis;
+            }
+            mTypingSpeedMillis = mRandomTypingSeedMillis + new Random().nextInt( ( int ) ( mTypingSpeedMillis ) );
+        }
+    }
+
+    private void addSentencePause()
+    {
+        //introduce sentence pause
+        if( mIndex != 0 && ( mText.charAt( mIndex - 1 ) == '.' || mText.charAt( mIndex - 1 ) == ',' ) )
+        {
+            //pause keystrokes as well
+            pauseKeyStrokes();
+
+            mHandler.removeCallbacks( mTypeWriter );
+            mHandler.postDelayed( mTypeWriter, mSentencePauseMillis );
+        }
+    }
 
     private Runnable mCursorProxyRunnable = new Runnable()
     {
@@ -252,18 +295,9 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
         mIndex = 0;
         setText( "" );
 
-        //remove previous callbacks
-        mHandler.removeCallbacks( mTypeWriter );
-        if( mbShowCursor )
-        {
-            mHandler.removeCallbacks( mCursorProxyRunnable );
-        }
+        removeCallbacks();
 
-        //prepare MediaPlayer
-        if( mbPlayKeyStrokesAudio )
-        {
-            mMediaPlayer = MediaPlayer.create( getContext(), mKeyStrokeAudioRes );
-        }
+        prepareMediaPlayer();
 
         //start typing
         mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
@@ -302,26 +336,27 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
         setTypedText( text );
     }
 
-    private String splitSentences( @NonNull String text )
+    private String splitSentences( @NonNull final String text )
     {
         Preconditions.checkNotNull( text );
-        int index = text.indexOf( '.' );
-        int lastIndex = text.lastIndexOf( '.' );
+        String modifiedText = text;
+        int index = modifiedText.indexOf( '.' );
+        int lastIndex = modifiedText.lastIndexOf( '.' );
         if( index != lastIndex )
         {
             //multiple sentences found.
             //introduce new lines for every full stop except the last one terminating string.
             do
             {
-                text = text.replaceFirst( "\\. ", ".\n" );
+                modifiedText = modifiedText.replaceFirst( "\\. ", ".\n" );
 
-                index = text.indexOf( '.', index + 1 );
-                lastIndex = text.lastIndexOf( '.' );
+                index = modifiedText.indexOf( '.', index + 1 );
+                lastIndex = modifiedText.lastIndexOf( '.' );
 
             } while( index != -1 && index != lastIndex );
         }
 
-        return text;
+        return modifiedText;
     }
 
     /**
@@ -447,10 +482,7 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
         if( mText != null && mIndex != 0 && mIndex != mText.length() )
         {
             //resume playing keystrokes
-            if( mbPlayKeyStrokesAudio )
-            {
-                mMediaPlayer.start();
-            }
+            playKeystrokes();
             mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
         }
     }
@@ -459,17 +491,10 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
     private void onViewStopped()
     {
         //stop typing as view is now in stopped state.
-        mHandler.removeCallbacks( mTypeWriter );
-        if( mbShowCursor )
-        {
-            mHandler.removeCallbacks( mCursorProxyRunnable );
-        }
+        removeCallbacks();
 
         //pause playing keystrokes
-        if( mbPlayKeyStrokesAudio )
-        {
-            mMediaPlayer.pause();
-        }
+        pauseKeyStrokes();
     }
 
     @Override
