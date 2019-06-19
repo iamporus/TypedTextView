@@ -521,23 +521,23 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
     {
         private int mCurrentIndex;
 
-        SavedState( Parcel source )
+        private SavedState( Parcel source )
         {
             super( source );
             mCurrentIndex = source.readInt();
         }
 
-        SavedState( Parcelable superState )
+        private SavedState( Parcelable superState )
         {
             super( superState );
         }
 
-        void setCurrentIndex( int currentIndex )
+        private void setCurrentIndex( int currentIndex )
         {
             mCurrentIndex = currentIndex;
         }
 
-        int getCurrentIndex()
+        private int getCurrentIndex()
         {
             return mCurrentIndex;
         }
