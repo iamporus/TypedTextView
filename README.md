@@ -8,6 +8,8 @@
 
 Custom implementation of Android's TextView simulating a keyboard/typewriter.
 
+<img align="right" width="350" src="https://github.com/iamporus/TypedTextView/blob/master/demo.gif">
+
 ## Features
 * display a **blinking cursor** after every character typed.
 * characters are displayed on the screen with **random speed** which simulates human behavior.
@@ -17,16 +19,11 @@ Custom implementation of Android's TextView simulating a keyboard/typewriter.
 * delay on sensing comma(,) and full stops(.) to **simulate user pauses**.
 * display **sentences on new line** on sensing full stops in passed text.
 
-
-
-## Preview
-![](demo.gif)
-
 ## Gradle
 * **Step 1.** Add the JitPack repository to your build file.
 
 Add following in your **Project level** build.gradle at the end of repositories:
-```
+```gradle
 allprojects {
   repositories {
     ...
@@ -35,7 +32,7 @@ allprojects {
 }
 ```
 * **Step 2.** Add the dependency
-```
+```gradle
 dependencies {
   ...
   implementation 'com.github.iamporus:TypedTextView:x.y.z'
@@ -46,7 +43,7 @@ The latest version of TypedTextView is  [![](https://jitpack.io/v/iamporus/Typed
 ## Usage - XML
 
 ### Simple Usage
-```
+```xml
 <com.prush.typedtextview.TypedTextView
         android:id="@+id/typedTextView"
         android:layout_width="match_parent"
@@ -58,7 +55,7 @@ The latest version of TypedTextView is  [![](https://jitpack.io/v/iamporus/Typed
 ```
 ### Customizations
 
-```
+```xml
 <com.prush.typedtextview.TypedTextView
         android:id="@+id/typedTextView"
         android:layout_width="match_parent"
@@ -80,7 +77,7 @@ The latest version of TypedTextView is  [![](https://jitpack.io/v/iamporus/Typed
 ## Usage - Java
 
 ### Simple Usage
-```
+```java
 TypedTextView typedTextView = findViewById( R.id.typedTextView );
 
 typedTextView.setTypedText( "Once there lived a monkey in a jamun tree by a river. The monkey was alone. He had no friends, no family, but he was happy and content." );
@@ -90,7 +87,7 @@ getLifecycle().addObserver( typedTextView.getLifecycleObserver() );
 
 ```
 ### Customizations
-```
+```java
 TypedTextView typedTextView = findViewById( R.id.typedTextView );
 //Set typing speed
 typedTextView.setTypingSpeed( 175 );
