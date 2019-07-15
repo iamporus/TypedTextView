@@ -19,24 +19,19 @@ public class MainActivity extends AppCompatActivity
 
         TypedTextView typedTextView = findViewById( R.id.typedTextView );
         //Set typing speed
-        typedTextView.setTypingSpeed( 175 );
 
-        //Configure sentences
-        typedTextView.splitSentences( true );
-        typedTextView.setSentencePause( 1500 );
+        TypedTextView.Builder builder = new TypedTextView.Builder( typedTextView )
+                .setTypingSpeed( 175 )
+                .splitSentences( true )
+                .setSentencePause( 1500 )
+                .setCursorBlinkSpeed( 530 )
+                .randomizeTypingSpeed( true )
+                .showCursor( false )
+                .playKeyStrokesAudio( true )
+                .randomizeTypeSeed( 250 );
 
-        //Configure Cursor
-        typedTextView.showCursor( true );
-        typedTextView.setCursorBlinkSpeed( 530 );
+        typedTextView = builder.build();
 
-        //Configure randomizing typing speed to simulate human behaviour
-        typedTextView.randomizeTypingSpeed( true );
-        typedTextView.randomizeTypeSeed( 75 );
-
-        //Play keystrokes audio
-        typedTextView.playKeyStrokesAudio( true );
-
-        //Set text to be typed
         typedTextView.setTypedText( "Once there lived a monkey in a jamun tree by a river. The monkey was alone. He had no friends, no family, but he was happy and content." );
 
         typedTextView.setOnCharacterTypedListener( new TypedTextView.OnCharacterTypedListener()
