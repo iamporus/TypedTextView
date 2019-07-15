@@ -303,6 +303,12 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
         mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
     }
 
+    private static void startTyping( @NonNull final String text )
+    {
+        Preconditions.checkNotNull( text );
+
+    }
+
     /**
      * Set text to be typed with the TypeWriter effect.
      *
@@ -461,6 +467,130 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
     {
         playKeyStrokesAudio( true );
         mKeyStrokeAudioRes = keyStrokeAudioRes;
+    }
+
+    public static class Builder
+    {
+        private TypedTextView mTypedTextView;
+        private long mSentencePauseMillis = DEFAULT_SENTENCE_PAUSE;
+        private long mCursorBlinkSpeedMillis = DEFAULT_CURSOR_BLINK_SPEED;
+        private long mRandomTypingSeedMillis = DEFAULT_RANDOM_TYPING_SEED;
+        private long mTypingSpeedMillis = DEFAULT_TYPING_SPEED;
+        private boolean mbShowCursor = SHOW_CURSOR;
+        private boolean mbSplitSentences = SPLIT_SENTENCES;
+        private boolean mbRandomizeTyping = RANDOMIZE_TYPING;
+        private boolean mbPlayKeyStrokesAudio = PLAY_KEYSTROKES_AUDIO;
+        private int mKeyStrokeAudioRes = DEFAULT_KEYSTROKES_AUDIO_RES;
+
+        public Builder( TypedTextView typedTextView )
+        {
+            this.mTypedTextView = typedTextView;
+        }
+
+        /**
+         * Randomize Typing delay
+         *
+         * @param seed long seed to randomize the default typing speed
+         */
+        public Builder randomizeTypeSeed( final long seed )
+        {
+            this.mRandomTypingSeedMillis = seed;
+            return this;
+        }
+
+        /**
+         * Show cursor while typing
+         *
+         * @param bShowCursor boolean display blinking cursor while typing.
+         */
+        public Builder showCursor( boolean bShowCursor )
+        {
+            this.mbShowCursor = bShowCursor;
+            return this;
+        }
+
+        /**
+         * Simulate human typing by randomize typing speed
+         *
+         * @param bRandomizeTypeSpeed boolean enable random typing speed.
+         */
+        public Builder randomizeTypingSpeed( final boolean bRandomizeTypeSpeed )
+        {
+            mTypedTextView.randomizeTypingSpeed( bRandomizeTypeSpeed );
+            return this;
+        }
+
+        /**
+         * Play specified keystrokes sound along with typing characters
+         *
+         * @param keyStrokeAudioRes @RawRes int resourceId of audio resource
+         */
+        public Builder playKeyStrokesAudioWith( @RawRes final int keyStrokeAudioRes )
+        {
+            mTypedTextView.playKeyStrokesAudioWith( keyStrokeAudioRes );
+            return this;
+        }
+
+        /**
+         * Play default keystrokes sound along with typing characters
+         *
+         * @param bPlayKeystrokesAudio boolean
+         */
+        public Builder playKeyStrokesAudio( final boolean bPlayKeystrokesAudio )
+        {
+            mTypedTextView.playKeyStrokesAudio( bPlayKeystrokesAudio );
+            return this;
+        }
+
+        /**
+         * Split sentences on a new line.
+         *
+         * @param bSplitSentences boolean Type Writer splits sentences onto new line based on fullstops
+         *                        found in the passed string
+         */
+        public Builder splitSentences( final boolean bSplitSentences )
+        {
+            mTypedTextView.splitSentences( bSplitSentences );
+            return this;
+        }
+
+        /**
+         * Set duration to wait after every sentence
+         *
+         * @param sentencePauseMillis long duration in milliseconds to wait after every sentence
+         */
+        public Builder setSentencePause( final long sentencePauseMillis )
+        {
+            mTypedTextView.setSentencePause( sentencePauseMillis );
+            return this;
+        }
+
+        /**
+         * Set duration to wait after every cursor blink
+         *
+         * @param cursorBlinkSpeedMillis long duration in milliseconds between every cursor blink
+         */
+        public Builder setCursorBlinkSpeed( final long cursorBlinkSpeedMillis )
+        {
+            mTypedTextView.setCursorBlinkSpeed( cursorBlinkSpeedMillis );
+            return this;
+        }
+
+        /**
+         * Set duration to wait after every character typed
+         *
+         * @param typingSpeedMillis long duration in milliseconds to wait after every character typed
+         */
+        public Builder setTypingSpeed( final long typingSpeedMillis )
+        {
+            mTypedTextView.setTypingSpeed( typingSpeedMillis );
+            return this;
+        }
+
+        public TypedTextView build()
+        {
+            return mTypedTextView;
+        }
     }
 
     /**
