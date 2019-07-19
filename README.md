@@ -89,6 +89,25 @@ getLifecycle().addObserver( typedTextView.getLifecycleObserver() );
 ### Customizations
 ```java
 TypedTextView typedTextView = findViewById( R.id.typedTextView );
+
+//Using Builder
+
+TypedTextView.Builder builder = new TypedTextView.Builder( typedTextView )
+                .setTypingSpeed( 175 )
+                .splitSentences( true )
+                .setSentencePause( 1500 )
+                .setCursorBlinkSpeed( 530 )
+                .randomizeTypingSpeed( true )
+                .showCursor( false )
+                .playKeyStrokesAudio( true )
+                .randomizeTypeSeed( 250 );
+
+typedTextView = builder.build();
+
+typedTextView.setTypedText( "Once there lived a monkey in a jamun tree by a river. The monkey was alone. He had no friends, no family, but he was happy and content." );
+
+//----------------------------------------------------- OR ---------------------------------------------------------------
+
 //Set typing speed
 typedTextView.setTypingSpeed( 175 );
 
