@@ -147,14 +147,14 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
                 //set character by character
                 setText( charSequence );
 
-                addSentencePause();
-
                 if( mOnCharacterTypedListener != null )
                 {
                     mOnCharacterTypedListener.onCharacterTyped( mText.charAt( mIndex ), mIndex );
                 }
 
                 mHandler.postDelayed( mTypeWriter, mTypingSpeedMillis );
+
+                addSentencePause();
 
                 mIndex++;
             }
