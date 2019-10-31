@@ -606,7 +606,7 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
     }
 
     @OnLifecycleEvent( Lifecycle.Event.ON_START )
-    private void onViewStarted()
+    void onViewStarted()
     {
         //resume typing if view was stopped before entire text was displayed.
         if( mText != null && mIndex != 0 && mIndex != mText.length() )
@@ -618,7 +618,7 @@ public class TypedTextView extends AppCompatTextView implements LifecycleObserve
     }
 
     @OnLifecycleEvent( Lifecycle.Event.ON_STOP )
-    private void onViewStopped()
+    void onViewStopped()
     {
         //stop typing as view is now in stopped state.
         removeCallbacks();
